@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import PropTypes from 'prop-types';
 
 const DEFAULT_QUERY = 'react';
 const DEFAULT_HPP = '8';
@@ -21,6 +22,7 @@ class App extends Component {
       searchKey: '',
       searchTerm: DEFAULT_QUERY,
       error: null,
+      isLoading: false,
     };
 
     this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
@@ -52,11 +54,13 @@ class App extends Component {
       results: {
         ...results,
         [searchKey]: { hits: updatedHits, page} 
-      }
+      },
+      isLoading: false
     });
   }
 
   fetchSearchTopStories(searchTerm, page = 0) {
+      this.setState({ isLoading: true });
       axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
         .then(result => this._isMounted && this.setSearchTopStories(result.data))
         .catch(error => this._isMounted && this.setState({ error}));
@@ -105,7 +109,7 @@ class App extends Component {
 
   render() {
     
-    const { searchTerm, results, searchKey, error } = this.state;
+    const { searchTerm, results, searchKey, error, isLoading } = this.state;
     const page =  ( results && results[searchKey] && results[searchKey].page) || 0;
     const list = ( results && results[searchKey] && results[searchKey].hits ) || [];
 
@@ -115,47 +119,49 @@ class App extends Component {
         { error 
         ? <div className="alert alert-danger">Something has gone wrong.  ({error.message})</div>
         :  <div>
-            <Button onClick={() => this.fetchSearchTopStories(searchKey, page +1)} className="btn btn-info my-4">More articles...</Button>
+        { isLoading 
+          ? <Loading /> 
+          : <div>
+            <Button onClick={() => this.fetchSearchTopStories(searchKey, page +1)} className="btn btn-info my-4">More articles...</Button> 
             <Table list={list} pattern={searchTerm} onDismiss={this.onDismiss} /> 
             <Button onClick={() => this.fetchSearchTopStories(searchKey, page +1)} className="btn btn-info my-4">More articles...</Button>
-          </div>
+            </div>
         }
-        
+           </div>
+        }
       </div>
     );
   }
 }
 
-const Search = ({ value, onChange, onSubmit, children }) => {
-  return (
-    <div className="row mt-4">
-
+const Search = ({ 
+  value, 
+  onChange, 
+  onSubmit, 
+  children }) => {
+    let input;
+    return (
+      <div className="row mt-4">
         <div className="col-sm-12">
-          
           <h1>{children}</h1>
-
           <form className="form-inline my-4" onSubmit={onSubmit}>
             <div className="input-group mb-3">
               <div className="input-group-prepend">
                 <label className="input-group-text" htmlFor="searchtext">Find articles on</label>
               </div>
-              <input type="text" className="form-control" onChange={onChange} value={value} 
-                placeholder="Enter filter text here" aria-label="searchTerm" id="searchtext" />
-              <div className="input-group-append">
-                <button type="submit" className="btn btn-success">FIND</button>
-              </div>
+              <input type="text" className="form-control" onChange={onChange} value={value}  placeholder="Enter search here" aria-label="searchTerm" id="searchtext" 
+              rel={el => this.input = el } />
+              <div className="input-group-append"><button type="submit" className="btn btn-success">FIND</button></div>
             </div>
           </form>
-
         </div>
       </div>
-  );
+    );
 }
  
-const Table = ({ list , onDismiss })  => {
-  return (
+const Table = ({ list , onDismiss })  => 
     <div className="row my-4">
-      <div className="col-sm-12">No. of articles: <span className="badge badge-info">{list.length}</span> </div>
+      <div className="col-sm-12 pb-2 mb-4 border-bottom">No. of articles: <span className="badge badge-info">{list.length}</span> </div>
       {list.map((item, index ) =>
         <div key={item.objectID} className="col-sm-3 mb-3">
           <div className="card">
@@ -172,15 +178,36 @@ const Table = ({ list , onDismiss })  => {
         </div>
     )}
     </div>
-  );
-}
 
-const Button =({ onClick, className, children }) => {
-  return (
+    Table.propTypes = {
+      list: PropTypes.array.isRequired,
+      onDismiss: PropTypes.func.isRequired,
+    }
+  
+const Button =({ 
+  onClick, 
+  className, 
+  children }) => 
     <button onClick={onClick} className={className} type='button'>{children}</button>
-  );
-}
 
+Button.defaultProps = {
+  className: '',
+};
+
+Button.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  className: PropTypes.string,
+  children: PropTypes.node.isRequired,
+};
+
+const Loading = () => 
+<div className="text-center alert alert-success py-4 text-success m-2">
+  <div className="spinner-border" role="status">
+    <span className="sr-only">Loading...</span>
+  </div>
+  <br /><h3 className="text-success">Loading...</h3>
+</div>
+  
 export default App;
 
 export { Button, Search, Table };
