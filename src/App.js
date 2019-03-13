@@ -149,8 +149,7 @@ const Search = ({
               <div className="input-group-prepend">
                 <label className="input-group-text" htmlFor="searchtext">Find articles on</label>
               </div>
-              <input type="text" className="form-control" onChange={onChange} value={value}  placeholder="Enter search here" aria-label="searchTerm" id="searchtext" 
-              rel={el => this.input = el } />
+              <input type="text" className="form-control" onChange={onChange} value={value}  placeholder="Enter search here" aria-label="searchTerm" id="searchtext" />
               <div className="input-group-append"><button type="submit" className="btn btn-success">FIND</button></div>
             </div>
           </form>
