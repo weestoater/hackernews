@@ -142,8 +142,10 @@ const Search = ({
     let input;
     return (
       <div className="row mt-4">
-        <div className="col-sm-12">
+        <div className="col-sm-3">
           <h1>{children}</h1>
+          </div>
+          <div className="col-sm-9">
           <form className="form-inline my-4" onSubmit={onSubmit}>
             <div className="input-group mb-3">
               <div className="input-group-prepend">
