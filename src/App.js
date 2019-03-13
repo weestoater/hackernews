@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 const DEFAULT_QUERY = 'react';
-const DEFAULT_HPP = '10';
+const DEFAULT_HPP = '8';
 
 const PATH_BASE = 'http://hn.algolia.com/api/v1';
 const PATH_SEARCH = '/search';
@@ -14,9 +14,12 @@ class App extends Component {
     super(props);
     this.state = {
       result: null,
+      searchKey: '',
       searchTerm: DEFAULT_QUERY,
+      error: '',
     };
 
+    this.needsToSearchTopStories = this.needsToSearchTopStories.bind(this);
     this.setSearchTopStories = this.setSearchTopStories.bind(this);
     this.fetchSearchTopStories = this.fetchSearchTopStories.bind(this);
     this.onSearchChange = this.onSearchChange.bind(this);
@@ -24,10 +27,16 @@ class App extends Component {
     this.onDismiss = this.onDismiss.bind(this);
   }
 
+  needsToSearchTopStories(searchTerm) {
+    return !this.state.results[searchTerm];
+  }
+
   setSearchTopStories(result) {
     const { hits, page } = result;
-    const oldHits = page != 0
-      ? this.state.result.hits
+    const { searchKey, results } = this.state;
+
+    const oldHits = results && results[searchKey]
+      ? results[searchKey].hits
       : [];
 
     const updatedHits =[
@@ -36,7 +45,10 @@ class App extends Component {
     ];
 
     this.setState({ 
-      result: { hits: updatedHits, page} 
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page} 
+      }
     });
   }
 
@@ -49,11 +61,8 @@ class App extends Component {
 
   componentDidMount() {
     const { searchTerm } = this.state;
-
-    fetch(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}`)
-      .then(response => response.json())
-      .then(result => this.setSearchTopStories(result))
-      .catch(error => error);
+    this.setState({ searchKey: searchTerm });
+    this.fetchSearchTopStories(searchTerm);
   }
 
   onSearchChange(event) {
@@ -62,34 +71,44 @@ class App extends Component {
 
   onSearchSubmit(event) {
     const { searchTerm } = this.state;
-    this.fetchSearchTopStories(searchTerm);
+    this.setState({ searchKey: searchTerm });
+    
+    if (this.needsToSearchTopStories(searchTerm)) {
+      this.fetchSearchTopStories(searchTerm);
+    }
+
     event.preventDefault();
   }
 
   onDismiss(id) {
-    console.log('ID = ', id);
+    const { searchKey, results } = this.state;
+    const { hits, page } = results[searchKey];
+
     const isNotId = item => item.objectID !== id;
-    const updatedHits= this.state.result.hits.filter(isNotId);
+    const updatedHits= hits.filter(isNotId);
+
     this.setState({ 
-      result: Object.assign({}, this.state.result, { hits: updatedHits })
+      results: {
+        ...results,
+        [searchKey]: { hits: updatedHits, page }
+      }
     }); 
   }
 
   render() {
     
-    const { searchTerm, result } = this.state;
-    const page = (result && result.page) || 0;
-
-    if (!result) { return null;}
+    const { searchTerm, results, searchKey, error } = this.state;
+    const page =  ( results && results[searchKey] && results[searchKey].page) || 0;
+    const list = ( results && results[searchKey] && results[searchKey].hits ) || [];
 
     return (
       <div className="container-fluid">
         <Search  value={searchTerm} onChange={this.onSearchChange} onSubmit={this.onSearchSubmit}>Hackernews Search</Search>
-        { result && 
+        { list && 
         <div>
-        <Button onClick={() => this.fetchSearchTopStories(searchTerm, page +1)} className="btn btn-info my-4">More articles...</Button>
-        <Table list={result.hits} pattern={searchTerm} onDismiss={this.onDismiss} /> 
-        <Button onClick={() => this.fetchSearchTopStories(searchTerm, page +1)} className="btn btn-info my-4">More articles...</Button>
+        <Button onClick={() => this.fetchSearchTopStories(searchKey, page +1)} className="btn btn-info my-4">More articles...</Button>
+        <Table list={list} pattern={searchTerm} onDismiss={this.onDismiss} /> 
+        <Button onClick={() => this.fetchSearchTopStories(searchKey, page +1)} className="btn btn-info my-4">More articles...</Button>
         </div>
         }
         
@@ -128,10 +147,10 @@ const Table = ({ list , onDismiss })  => {
   return (
     <div className="row my-4">
       <div className="col-sm-12">No. of articles: <span className="badge badge-info">{list.length}</span> </div>
-      {list.map(item =>
+      {list.map((item, index ) =>
         <div key={item.objectID} className="col-sm-3 mb-3">
           <div className="card">
-            <div className="card-header"><a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></div>
+            <div className="card-header"><small className="badge badge-primary pull-left mr-2 mt-1">{ index+1 }</small> <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></div>
             <div className="card-body">
               <p><small className="text-info">Author:</small> { item.author}<br /><small className="text-info">Comments:</small> {item.num_comments} | <small className="text-info">Points:</small> {item.points}</p>
             </div>
