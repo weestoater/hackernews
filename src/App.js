@@ -137,7 +137,7 @@ const Search = ({ value, onChange, onSubmit, children }) => {
           <form className="form-inline my-4" onSubmit={onSubmit}>
             <div className="input-group mb-3">
               <div className="input-group-prepend">
-                <label className="input-group-text" for="searchtext">Find articles on</label>
+                <label className="input-group-text" htmlFor="searchtext">Find articles on</label>
               </div>
               <input type="text" className="form-control" onChange={onChange} value={value} 
                 placeholder="Enter filter text here" aria-label="searchTerm" id="searchtext" />
@@ -161,7 +161,9 @@ const Table = ({ list , onDismiss })  => {
           <div className="card">
             <div className="card-header"><small className="badge badge-primary pull-left mr-2 mt-1">{ index+1 }</small> <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></div>
             <div className="card-body">
-              <p><small className="text-info">Author:</small> { item.author}<br /><small className="text-info">Comments:</small> {item.num_comments} | <small className="text-info">Points:</small> {item.points}</p>
+              <p><small className="text-info">Author:</small> { item.author}<br />
+              <small className="text-info">Comments:</small> {item.num_comments} | <small className="text-info">Points:</small> {item.points} |<br />
+              <small className="text-info">Relevancy:</small> {item.relevancy_score}</p>
             </div>
             <div className="card-footer px-4">
               <Button onClick={() => onDismiss(item.objectID)}  className="btn btn-sm btn-warning">Remove</Button>
@@ -180,3 +182,5 @@ const Button =({ onClick, className, children }) => {
 }
 
 export default App;
+
+export { Button, Search, Table };
