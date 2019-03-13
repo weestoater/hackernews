@@ -1,6 +1,11 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import PropTypes from 'prop-types';
+
+import Button from './components/Button/Button';
+import Loading from './components/Loading/Loading';
+import NavBar from './components/NavBar/NavBar';
+import Search from './components/Search/Search';
+import Table from './components/Table/Table';
 
 const DEFAULT_QUERY = 'react';
 const DEFAULT_HPP = '8';
@@ -114,7 +119,9 @@ class App extends Component {
     const list = ( results && results[searchKey] && results[searchKey].hits ) || [];
 
     return (
-      <div className="container-fluid">
+      <div>
+        <NavBar />
+        <div className="container-fluid">
         <Search  value={searchTerm} onChange={this.onSearchChange} onSubmit={this.onSearchSubmit}>Hackernews Search</Search>
         { error 
         ? <div className="alert alert-danger">Something has gone wrong.  ({error.message})</div>
@@ -129,86 +136,12 @@ class App extends Component {
         }
            </div>
         }
+        </div>
       </div>
     );
   }
 }
-
-const Search = ({ 
-  value, 
-  onChange, 
-  onSubmit, 
-  children }) => {
-    let input;
-    return (
-      <div className="row mt-4">
-        <div className="col-sm-3">
-          <h1>{children}</h1>
-          </div>
-          <div className="col-sm-9">
-          <form className="form-inline my-4" onSubmit={onSubmit}>
-            <div className="input-group mb-3">
-              <div className="input-group-prepend">
-                <label className="input-group-text" htmlFor="searchtext">Find articles on</label>
-              </div>
-              <input type="text" className="form-control" onChange={onChange} value={value}  placeholder="Enter search here" aria-label="searchTerm" id="searchtext" />
-              <div className="input-group-append"><button type="submit" className="btn btn-success">FIND</button></div>
-            </div>
-          </form>
-        </div>
-      </div>
-    );
-}
  
-const Table = ({ list , onDismiss })  => 
-    <div className="row my-4">
-      <div className="col-sm-12 pb-2 mb-4 border-bottom">No. of articles: <span className="badge badge-info">{list.length}</span> </div>
-      {list.map((item, index ) =>
-        <div key={item.objectID} className="col-sm-3 mb-3">
-          <div className="card">
-            <div className="card-header"><small className="badge badge-primary pull-left mr-2 mt-1">{ index+1 }</small> <a href={item.url} target="_blank" rel="noopener noreferrer">{item.title}</a></div>
-            <div className="card-body">
-              <p><small className="text-info">Author:</small> { item.author}<br />
-              <small className="text-info">Comments:</small> {item.num_comments} | <small className="text-info">Points:</small> {item.points} |<br />
-              <small className="text-info">Relevancy:</small> {item.relevancy_score}</p>
-            </div>
-            <div className="card-footer px-4">
-              <Button onClick={() => onDismiss(item.objectID)}  className="btn btn-sm btn-warning">Remove</Button>
-            </div>
-          </div>
-        </div>
-    )}
-    </div>
-
-    Table.propTypes = {
-      list: PropTypes.array.isRequired,
-      onDismiss: PropTypes.func.isRequired,
-    }
-  
-const Button =({ 
-  onClick, 
-  className, 
-  children }) => 
-    <button onClick={onClick} className={className} type='button'>{children}</button>
-
-Button.defaultProps = {
-  className: '',
-};
-
-Button.propTypes = {
-  onClick: PropTypes.func.isRequired,
-  className: PropTypes.string,
-  children: PropTypes.node.isRequired,
-};
-
-const Loading = () => 
-<div className="text-center alert alert-success py-4 text-success m-2">
-  <div className="spinner-border" role="status">
-    <span className="sr-only">Loading...</span>
-  </div>
-  <br /><h3 className="text-success">Loading...</h3>
-</div>
-  
 export default App;
 
 export { Button, Search, Table };
