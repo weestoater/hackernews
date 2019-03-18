@@ -64,7 +64,7 @@ class App extends Component {
     });
   }
 
-  fetchSearchTopStories(searchTerm, page = 0) {
+  fetchSearchTopStories( searchTerm, page = 0 ) {
       this.setState({ isLoading: true });
       axios(`${PATH_BASE}${PATH_SEARCH}?${PARAM_SEARCH}${searchTerm}&${PARAM_PAGE}${page}&${PARAM_HPP}${DEFAULT_HPP}`)
         .then(result => this._isMounted && this.setSearchTopStories(result.data))

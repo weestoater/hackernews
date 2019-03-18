@@ -39,5 +39,4 @@ describe('Table -> ', () => {
     expect(element.find('.card').length).toBe(2);
   });
 
-
 });

@@ -2,7 +2,7 @@ import React from 'react';
 
 const NavBar= () => (
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="http://www.weestoater.com/dev/">React Apps</a>
+        <a class="navbar-brand" href="http://www.weestoater.com/dev/">[ws dev]</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#topNavBar" aria-controls="topNavBar" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
