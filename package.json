@@ -3,13 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "axios": "^0.18.0",
-    "prop-types": "^15.7.2",
-    "react": "^16.7.0",
-    "react-dom": "^16.7.0",
-    "react-router-dom": "^5.0.0",
-    "react-scripts": "^2.1.8",
-    "typescript": "^3.4.5"
+    "axios": "^1.20.0",
+    "prop-types": "^15.8.1",
+    "react": "^16.14.0",
+    "react-dom": "^16.14.0",
+    "react-router-dom": "^5.3.4",
+    "react-scripts": "^5.0.1",
+    "typescript": "^4.9.5"
   },
   "scripts": {
     "watch": "webpack -d --watch",
@@ -21,7 +21,13 @@
     "cy:run": "cypress run"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "parserOptions": {
+      "babelOptions": {
+        "babelrc": false,
+        "configFile": false
+      }
+    }
   },
   "browserslist": [
     ">0.2%",
@@ -30,11 +36,16 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "cypress": "^3.3.1",
-    "enzyme": "^3.9.0",
-    "enzyme-adapter-react-16": "^1.11.0",
-    "eslint-plugin-cypress": "^2.2.1",
-    "react-addons-test-utils": "^15.6.2",
-    "react-test-renderer": "^16.8.4"
+    "cypress": "^16.2.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.8",
+    "eslint-plugin-cypress": "^3.6.0",
+    "react-test-renderer": "^16.14.0"
+  },
+  "overrides": {
+    "cheerio": "1.0.0-rc.12"
+  },
+  "resolutions": {
+    "cheerio": "1.0.0-rc.12"
   }
 }

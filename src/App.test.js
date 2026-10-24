@@ -19,6 +19,7 @@ describe('react App -> ', () => {
     const component = renderer.create(<App />);
     const tree = component.toJSON();
     expect(tree).toMatchSnapshot();
+    component.unmount();
   });
 
 });
